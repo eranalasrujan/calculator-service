@@ -17,7 +17,7 @@ def divide(a, b):
 
 def pow(a,b):
     return a**b
-#new commentttttt
+#new commenttttttt
 
 def mod_div(a,b):
     if b == 0:
