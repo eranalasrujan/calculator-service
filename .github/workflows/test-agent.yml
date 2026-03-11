@@ -1,4 +1,5 @@
-name: AI Test Agent
+name: Test AI Agent
+
 on:
   pull_request:
     types: [opened, synchronize]
@@ -6,11 +7,15 @@ on:
 jobs:
   generate-tests:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Run AI Test Agent
-        uses: harshith-56/UNIT-TEST-AGENT@v1
-        env:
-          LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
-          LLM_API_URL: ${{ secrets.LLM_API_URL }}
-          LLM_MODEL: ${{ secrets.LLM_MODEL }}
+        uses: harshith-56/UNIT-TEST-AGENT@v2
+        with:
+          llm_api_url: ${{ secrets.LLM_API_URL }}
+          llm_api_key: ${{ secrets.LLM_API_KEY }}
+          llm_model: ${{ secrets.LLM_MODEL }}
