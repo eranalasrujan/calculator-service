@@ -9,7 +9,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run AI Test Agent
-        uses: harshith-56/UNIT-TEST-AGENT@v1
+        uses: harshith-56/UNIT-TEST-AGENT@v2
         env:
           LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
           LLM_API_URL: ${{ secrets.LLM_API_URL }}
