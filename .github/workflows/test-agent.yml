@@ -2,14 +2,18 @@ name: AI Test Agent
 
 on:
   pull_request:
-    types: [opened, synchronize]
+    types: [opened, synchronize, reopened]
 
 jobs:
   generate-tests:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: write
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
@@ -20,9 +24,23 @@ jobs:
           llm_api_key: ${{ secrets.LLM_API_KEY }}
           llm_model: ${{ secrets.LLM_MODEL }}
 
-      - name: Upload generated tests
-        uses: actions/upload-artifact@v4
-        with:
-          name: ai-generated-tests
-          path: tests/ai_generated
-          if-no-files-found: ignore
+      - name: Move generated tests to unit_tests
+        run: |
+          mkdir -p unit_tests
+          if [ -d "tests/ai_generated" ]; then
+            cp -r tests/ai_generated/* unit_tests/ || true
+          fi
+
+      - name: Commit generated tests
+        run: |
+          git config user.name "harshith-56"
+          git config user.email "harshithreddy3737@gmail.com"
+
+          git add unit_tests
+
+          if git diff --cached --quiet; then
+            echo "No new tests generated"
+          else
+            git commit -m "AI generated unit tests"
+            git push
+          fi
