@@ -24,29 +24,40 @@ jobs:
           llm_api_key: ${{ secrets.LLM_API_KEY }}
           llm_model: ${{ secrets.LLM_MODEL }}
 
+      # Debug step so you can see where files were generated
+      - name: Debug generated test files
+        run: |
+          echo "Listing tests directory"
+          ls -R tests || true
+
+      # Remove Python cache files so they are not committed
       - name: Clean Python cache files
         run: |
-          if [ -d "unit_tests" ]; then
-            find unit_tests -name "__pycache__" -type d -exec rm -rf {} +
-            find unit_tests -name "*.pyc" -delete
+          if [ -d "tests/ai_generated" ]; then
+            find tests/ai_generated -name "__pycache__" -type d -exec rm -rf {} +
+            find tests/ai_generated -name "*.pyc" -delete
           fi
 
       - name: Commit generated tests
         run: |
           git config user.name "harshith-56"
           git config user.email "harshithreddy3737@gmail.com"
-      
-          if [ ! -d "unit_tests" ]; then
-            echo "unit_tests directory not found, skipping commit"
+
+          # If generator did not produce any tests
+          if [ ! -d "tests/ai_generated" ]; then
+            echo "tests/ai_generated directory not found, skipping commit"
             exit 0
           fi
-      
-          git add unit_tests
-      
+
+          git add tests/ai_generated
+
+          # Skip commit if nothing changed
           if git diff --cached --quiet; then
             echo "No new tests generated"
             exit 0
           fi
-      
+
           git commit -m "AI generated unit tests"
+
+          # Push from detached HEAD to PR branch
           git push origin HEAD:${{ github.head_ref }}
