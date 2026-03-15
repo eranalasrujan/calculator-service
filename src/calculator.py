@@ -174,15 +174,24 @@ def palindrome_partitions(s: str) -> List[List[str]]:
 
 
 def matrix_multiply(a: List[List[int]], b: List[List[int]]) -> List[List[int]]:
+    if not a or not b:
+        return []
+
     rows_a = len(a)
     cols_a = len(a[0])
+    rows_b = len(b)
     cols_b = len(b[0])
 
-    result = [[0]*cols_b for _ in range(rows_a)]
+    if cols_a != rows_b:
+        raise ValueError("matrix dimensions do not match for multiplication")
+
+    result = [[0 for _ in range(cols_b)] for _ in range(rows_a)]
 
     for i in range(rows_a):
-        for j in range(cols_b):
-            for k in range(cols_a):
+        for k in range(cols_a):
+            if a[i][k] == 0:
+                continue
+            for j in range(cols_b):
                 result[i][j] += a[i][k] * b[k][j]
 
     return result
