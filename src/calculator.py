@@ -251,6 +251,16 @@ def dijkstra(graph: Dict[int, List[Tuple[int,int]]], start: int):
 
 
 def sliding_window_max(nums: List[int], k: int) -> List[int]:
+
+    if k <= 0:
+        raise ValueError("k must be positive")
+
+    if not nums:
+        return []
+
+    if k > len(nums):
+        return [max(nums)]
+
     dq = deque()
     result = []
 
