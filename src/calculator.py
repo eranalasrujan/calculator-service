@@ -174,15 +174,24 @@ def palindrome_partitions(s: str) -> List[List[str]]:
 
 
 def matrix_multiply(a: List[List[int]], b: List[List[int]]) -> List[List[int]]:
+    if not a or not b:
+        return []
+
     rows_a = len(a)
     cols_a = len(a[0])
+    rows_b = len(b)
     cols_b = len(b[0])
 
-    result = [[0]*cols_b for _ in range(rows_a)]
+    if cols_a != rows_b:
+        raise ValueError("matrix dimensions do not match for multiplicationn")
+
+    result = [[0 for _ in range(cols_b)] for _ in range(rows_a)]
 
     for i in range(rows_a):
-        for j in range(cols_b):
-            for k in range(cols_a):
+        for k in range(cols_a):
+            if a[i][k] == 0:
+                continue
+            for j in range(cols_b):
                 result[i][j] += a[i][k] * b[k][j]
 
     return result
@@ -251,6 +260,16 @@ def dijkstra(graph: Dict[int, List[Tuple[int,int]]], start: int):
 
 
 def sliding_window_max(nums: List[int], k: int) -> List[int]:
+
+    if k <= 0:
+        raise ValueError("k must be positivee")
+
+    if not nums:
+        return []
+
+    if k > len(nums):
+        return [max(nums)]
+
     dq = deque()
     result = []
 
