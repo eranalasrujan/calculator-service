@@ -481,29 +481,6 @@ def test_majority_element():
 
 
 
-def test_roman_to_int():
-    assert roman_to_int('I') == 1
-    assert roman_to_int('V') == 5
-    assert roman_to_int('X') == 10
-    assert roman_to_int('L') == 50
-    assert roman_to_int('C') == 100
-    assert roman_to_int('D') == 500
-    assert roman_to_int('M') == 1000
-    assert roman_to_int('II') == 2
-    assert roman_to_int('III') == 3
-    assert roman_to_int('IV') == 4
-    assert roman_to_int('IX') == 9
-    assert roman_to_int('XL') == 40
-    assert roman_to_int('XC') == 90
-    assert roman_to_int('CD') == 400
-    assert roman_to_int('CM') == 900
-    assert roman_to_int('MMXXI') == 2021
-    with pytest.raises(KeyError):
-        roman_to_int('A')
-    with pytest.raises(KeyError):
-        roman_to_int('IIV')
-
-
 
 def test_int_to_roman():
     assert int_to_roman(1) == "I"
@@ -560,6 +537,8 @@ def test_longest_unique_substring():
 
 
 
+
+
 def test_matrix_multiply():
     assert matrix_multiply([[1, 2], [3, 4]], [[5, 6], [7, 8]]) == [[19, 22], [43, 50]]
     assert matrix_multiply([[1, 2], [3, 4]], [[5], [7]]) == [[17], [39]]
@@ -592,3 +571,25 @@ def test_sliding_window_max():
         sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 3)
     assert sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 2) == [3, 3, 5, 5]
     assert sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 4) == [3, 5, 5, 6]
+
+def test_roman_to_int():
+    assert roman_to_int("I") == 1
+    assert roman_to_int("V") == 5
+    assert roman_to_int("X") == 10
+    assert roman_to_int("L") == 50
+    assert roman_to_int("C") == 100
+    assert roman_to_int("D") == 500
+    assert roman_to_int("M") == 1000
+    assert roman_to_int("III") == 3
+    assert roman_to_int("IV") == 4
+    assert roman_to_int("IX") == 9
+    assert roman_to_int("LVIII") == 58
+    assert roman_to_int("MCMXCIV") == 1994
+    with pytest.raises(TypeError):
+        roman_to_int(123)
+    with pytest.raises(ValueError):
+        roman_to_int("")
+    with pytest.raises(ValueError):
+        roman_to_int("abc")
+    with pytest.raises(ValueError):
+        roman_to_int("IIII")
