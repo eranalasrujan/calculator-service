@@ -183,7 +183,7 @@ def matrix_multiply(a: List[List[int]], b: List[List[int]]) -> List[List[int]]:
     cols_b = len(b[0])
 
     if cols_a != rows_b:
-        raise ValueError("matrix dimensions do not match for multiplication")
+        raise ValueError("matrix dimensions do not match for multiplicationn")
 
     result = [[0 for _ in range(cols_b)] for _ in range(rows_a)]
 
