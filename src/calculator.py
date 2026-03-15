@@ -302,16 +302,31 @@ def majority_element(nums: List[int]) -> int:
 
 
 def roman_to_int(s: str) -> int:
+    if not isinstance(s, str):
+        raise TypeError("roman numeral must be a string")
+
+    if not s:
+        raise ValueError("empty roman numeral")
+
+    s = s.upper()
+
     vals = {'I':1,'V':5,'X':10,'L':50,'C':100,'D':500,'M':1000}
+
     total = 0
     prev = 0
 
     for c in reversed(s):
+
+        if c not in vals:
+            raise ValueError(f"invalid roman numeral character: {c}")
+
         val = vals[c]
+
         if val < prev:
             total -= val
         else:
             total += val
+
         prev = val
 
     return total
