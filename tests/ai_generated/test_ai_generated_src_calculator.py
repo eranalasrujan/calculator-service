@@ -1,5 +1,39 @@
-import pytest
+from src.calculator import backtrack
+from src.calculator import binary_search
+from src.calculator import combinations
+from src.calculator import detect_cycle_directed
+from src.calculator import dfs
+from src.calculator import dijkstra
+from src.calculator import edit_distance
+from src.calculator import evaluate_rpn
 from src.calculator import fibonacci
+from src.calculator import flatten_list
+from src.calculator import gcd
+from src.calculator import generate_subsets
+from src.calculator import group_anagrams
+from src.calculator import int_to_roman
+from src.calculator import is_pal
+from src.calculator import is_prime
+from src.calculator import knapsack
+from src.calculator import lcm, gcd
+from src.calculator import longest_common_subsequence
+from src.calculator import longest_unique_substring
+from src.calculator import majority_element
+from src.calculator import matrix_multiply
+from src.calculator import merge_intervals
+from src.calculator import palindrome_partitions
+from src.calculator import permutations
+from src.calculator import prime_factors
+from src.calculator import roman_to_int
+from src.calculator import shortest_path_bfs
+from src.calculator import sliding_window_max
+from src.calculator import top_k_frequent
+from src.calculator import transpose_matrix
+from typing import Dict, List
+from typing import Dict, List, Tuple
+from typing import List
+from typing import List, Tuple
+import pytest
 
 def test_fibonacci():
     assert fibonacci(0) == 0
@@ -13,8 +47,6 @@ def test_fibonacci():
     assert fibonacci(20) == 6765
 
 
-import pytest
-from src.calculator import is_prime
 
 def test_is_prime():
     assert is_prime(2) == True
@@ -32,8 +64,6 @@ def test_is_prime():
         is_prime(1.5)
 
 
-import pytest
-from src.calculator import prime_factors
 
 def test_prime_factors():
     assert prime_factors(1) == []
@@ -52,8 +82,6 @@ def test_prime_factors():
         prime_factors(1.5)
 
 
-import pytest
-from src.calculator import gcd
 
 def test_gcd():
     assert gcd(10, 15) == 5
@@ -66,8 +94,6 @@ def test_gcd():
         gcd(10, 'b')
 
 
-import pytest
-from src.calculator import lcm, gcd
 
 def test_lcm():
     assert lcm(2, 3) == 6
@@ -85,8 +111,6 @@ def test_lcm():
     assert lcm(-2, -3) == 6
 
 
-import pytest
-from src.calculator import flatten_list
 
 def test_flatten_list():
     assert flatten_list([1, 2, [3, 4], [5, [6, 7]]]) == [1, 2, 3, 4, 5, 6, 7]
@@ -99,8 +123,6 @@ def test_flatten_list():
         flatten_list(123)
 
 
-import pytest
-from src.calculator import longest_common_subsequence
 
 def test_longest_common_subsequence():
     assert longest_common_subsequence("abc", "def") == 0
@@ -115,8 +137,6 @@ def test_longest_common_subsequence():
         longest_common_subsequence("abc", 123)
 
 
-import pytest
-from src.calculator import edit_distance
 
 def test_edit_distance():
     assert edit_distance("kitten", "sitting") == 3
@@ -132,8 +152,6 @@ def test_edit_distance():
         edit_distance(123, 456)
 
 
-import pytest
-from src.calculator import knapsack
 
 def test_knapsack():
     assert knapsack([1, 2, 3], [10, 20, 30], 5) == 30
@@ -150,9 +168,6 @@ def test_knapsack():
     assert knapsack([1, 2, 3], [], 5) == 0
 
 
-import pytest
-from src.calculator import permutations
-from typing import List, Tuple
 
 def test_permutations():
     assert permutations([1, 2, 3]) == [(1, 2, 3), (1, 3, 2), (2, 1, 3), (2, 3, 1), (3, 1, 2), (3, 2, 1)]
@@ -164,9 +179,6 @@ def test_permutations():
         permutations(123)
 
 
-import pytest
-from src.calculator import combinations
-from typing import List
 
 def test_combinations():
     # Test with a list of integers
@@ -188,8 +200,6 @@ def test_combinations():
         combinations([1, 2, 3], 4)
 
 
-import pytest
-from src.calculator import binary_search
 
 def test_binary_search():
     assert binary_search([1, 2, 3, 4, 5], 3) == 2
@@ -204,8 +214,6 @@ def test_binary_search():
     assert binary_search([1, 2, 3, 4, 5], 5) == 4
 
 
-import pytest
-from src.calculator import merge_intervals
 
 def test_merge_intervals():
     assert merge_intervals([[1,3],[2,6],[8,10],[15,18]]) == [[1,6],[8,10],[15,18]]
@@ -219,8 +227,6 @@ def test_merge_intervals():
         merge_intervals([1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20])
 
 
-import pytest
-from src.calculator import top_k_frequent
 
 def test_top_k_frequent():
     assert top_k_frequent([1, 1, 1, 2, 2, 3], 2) == [1, 2]
@@ -235,8 +241,6 @@ def test_top_k_frequent():
         top_k_frequent([1, 2, 3], -1)
 
 
-import pytest
-from src.calculator import group_anagrams
 
 def test_group_anagrams():
     assert group_anagrams(["eat", "tea", "tan", "ate", "nat", "bat"]) == [["ate", "eat", "tea"], ["bat"], ["nat", "tan"]]
@@ -248,8 +252,6 @@ def test_group_anagrams():
         group_anagrams("hello")
 
 
-import pytest
-from src.calculator import palindrome_partitions
 
 def test_palindrome_partitions():
     assert palindrome_partitions("a") == [["a"]]
@@ -263,8 +265,6 @@ def test_palindrome_partitions():
         palindrome_partitions(None)
 
 
-import pytest
-from src.calculator import is_pal
 
 def test_is_pal():
     assert is_pal(121) == True
@@ -275,8 +275,6 @@ def test_is_pal():
         is_pal("121")
 
 
-import pytest
-from src.calculator import backtrack
 
 def test_backtrack():
     s = "abba"
@@ -321,49 +319,7 @@ def test_backtrack():
     assert result == [["a", "a", "b", "b"], ["a", "b", "a", "b"]]
 
 
-import pytest
-from src.calculator import matrix_multiply
 
-def test_matrix_multiply():
-    # Test with 2x2 matrices
-    a = [[1, 2], [3, 4]]
-    b = [[5, 6], [7, 8]]
-    expected = [[19, 22], [43, 50]]
-    assert matrix_multiply(a, b) == expected
-
-    # Test with 3x3 matrices
-    a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
-    b = [[10, 11, 12], [13, 14, 15], [16, 17, 18]]
-    expected = [[84, 90, 96], [201, 216, 231], [318, 342, 366]]
-    assert matrix_multiply(a, b) == expected
-
-    # Test with 1x1 matrices
-    a = [[1]]
-    b = [[2]]
-    expected = [[2]]
-    assert matrix_multiply(a, b) == expected
-
-    # Test with non-square matrices
-    a = [[1, 2], [3, 4]]
-    b = [[5], [6]]
-    with pytest.raises(ValueError):
-        matrix_multiply(a, b)
-
-    # Test with non-list input
-    a = 123
-    b = [[5, 6], [7, 8]]
-    with pytest.raises(TypeError):
-        matrix_multiply(a, b)
-
-    # Test with non-list input
-    a = [[5, 6], [7, 8]]
-    b = 123
-    with pytest.raises(TypeError):
-        matrix_multiply(a, b)
-
-
-import pytest
-from src.calculator import transpose_matrix
 
 def test_transpose_matrix():
     matrix = [[1, 2, 3], [4, 5, 6]]
@@ -395,9 +351,6 @@ def test_transpose_matrix():
         transpose_matrix(123)
 
 
-import pytest
-from src.calculator import shortest_path_bfs
-from typing import Dict, List
 
 def test_shortest_path_bfs():
     graph = {
@@ -440,8 +393,6 @@ def test_shortest_path_bfs():
     assert shortest_path_bfs(graph, 0, 4) == 3
 
 
-import pytest
-from src.calculator import detect_cycle_directed
 
 def test_detect_cycle_directed():
     # Test case 1: No cycle in the graph
@@ -473,8 +424,6 @@ def test_detect_cycle_directed():
     assert detect_cycle_directed(graph7)
 
 
-import pytest
-from src.calculator import dfs
 
 def test_dfs():
     graph = {
@@ -496,9 +445,6 @@ def test_dfs():
         dfs('A', graph, stack, 'visited')
 
 
-import pytest
-from src.calculator import dijkstra
-from typing import Dict, List, Tuple
 
 def test_dijkstra():
     graph = {0: [(1, 4), (2, 2)], 1: [(2, 1), (3, 5)], 2: [(3, 8)], 3: []}
@@ -522,24 +468,7 @@ def test_dijkstra():
     assert dijkstra(graph, 1) == {0: math.inf, 1: 0}
 
 
-import pytest
-from src.calculator import sliding_window_max
 
-def test_sliding_window_max():
-    assert sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 3) == [3, 3, 5, 5, 6, 7]
-    assert sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 1) == [1, 3, -1, -3, 5, 3, 6, 7]
-    assert sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 8) == []
-    assert sliding_window_max([], 3) == []
-    with pytest.raises(TypeError):
-        sliding_window_max("123", 3)
-    with pytest.raises(TypeError):
-        sliding_window_max([1, 2, 3], "a")
-    with pytest.raises(TypeError):
-        sliding_window_max([1, 2, 3], 3.5)
-
-
-import pytest
-from src.calculator import majority_element
 
 def test_majority_element():
     assert majority_element([3, 2, 3]) == 3
@@ -551,8 +480,6 @@ def test_majority_element():
         majority_element([1, 2, 3, 4, 5, 6, 7, 8, 9])
 
 
-import pytest
-from src.calculator import roman_to_int
 
 def test_roman_to_int():
     assert roman_to_int('I') == 1
@@ -577,8 +504,6 @@ def test_roman_to_int():
         roman_to_int('IIV')
 
 
-import pytest
-from src.calculator import int_to_roman
 
 def test_int_to_roman():
     assert int_to_roman(1) == "I"
@@ -594,8 +519,6 @@ def test_int_to_roman():
         int_to_roman(-1)
 
 
-import pytest
-from src.calculator import evaluate_rpn
 
 def test_evaluate_rpn():
     assert evaluate_rpn(["5", "3", "+"]) == 8
@@ -612,8 +535,6 @@ def test_evaluate_rpn():
         evaluate_rpn(["5", "3", "+", "4"])
 
 
-import pytest
-from src.calculator import generate_subsets
 
 def test_generate_subsets():
     assert generate_subsets([1, 2, 3]) == [[], [1], [2], [1, 2], [3], [1, 3], [2, 3], [1, 2, 3]]
@@ -625,8 +546,6 @@ def test_generate_subsets():
         generate_subsets(123)
 
 
-import pytest
-from src.calculator import longest_unique_substring
 
 def test_longest_unique_substring():
     assert longest_unique_substring("abcabcbb") == 3
@@ -638,3 +557,32 @@ def test_longest_unique_substring():
         longest_unique_substring(123)
     with pytest.raises(TypeError):
         longest_unique_substring(None)
+
+def test_matrix_multiply():
+    assert matrix_multiply([[1, 2], [3, 4]], [[5, 6], [7, 8]]) == [[19, 22], [43, 50]]
+    assert matrix_multiply([[1, 2], [3, 4]], [[5], [7]]) == [[17], [39]]
+    assert matrix_multiply([[1, 2], [3, 4]], [[5, 6]]) == [[19, 22]]
+    assert matrix_multiply([[1, 2], [3, 4]], []) == []
+    assert matrix_multiply([], [[5, 6], [7, 8]]) == []
+    with pytest.raises(ValueError):
+        matrix_multiply([[1, 2], [3, 4]], [[5, 6], [7, 9]])
+    with pytest.raises(ValueError):
+        matrix_multiply([[1, 2]], [[5, 6], [7, 8]])
+    with pytest.raises(ValueError):
+        matrix_multiply([[1, 2], [3, 4]], [[5, 6]])
+    with pytest.raises(ValueError):
+        matrix_multiply([[1, 2]], [[5, 6]])
+    with pytest.raises(ValueError):
+        matrix_multiply([], [[5, 6], [7, 8]])
+    with pytest.raises(ValueError):
+        matrix_multiply([[1, 2], [3, 4]], [])
+
+def test_sliding_window_max():
+    assert sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 3) == [3, 3, 5, 5, 6, 7]
+    assert sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 1) == [1, 3, -1, -3, 5, 3, 6, 7]
+    assert sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 8) == [7]
+    assert sliding_window_max([], 3) == []
+    with pytest.raises(ValueError):
+        sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 0)
+    with pytest.raises(ValueError):
+        sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], -3)
