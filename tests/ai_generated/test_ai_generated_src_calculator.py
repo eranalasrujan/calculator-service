@@ -638,3 +638,17 @@ def test_longest_unique_substring():
         longest_unique_substring(123)
     with pytest.raises(TypeError):
         longest_unique_substring(None)
+
+
+import pytest
+from src.calculator import sliding_window_max
+
+def test_sliding_window_max():
+    assert sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 3) == [3, 3, 5, 5, 6, 7]
+    assert sliding_window_max([], 3) == []
+    assert sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 1) == [1, 3, -1, -3, 5, 3, 6, 7]
+    assert sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 8) == [7]
+    with pytest.raises(ValueError):
+        sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 0)
+    with pytest.raises(ValueError):
+        sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], -1)
