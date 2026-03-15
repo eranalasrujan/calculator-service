@@ -558,6 +558,8 @@ def test_longest_unique_substring():
     with pytest.raises(TypeError):
         longest_unique_substring(None)
 
+
+
 def test_matrix_multiply():
     assert matrix_multiply([[1, 2], [3, 4]], [[5, 6], [7, 8]]) == [[19, 22], [43, 50]]
     assert matrix_multiply([[1, 2], [3, 4]], [[5], [7]]) == [[17], [39]]
@@ -571,11 +573,11 @@ def test_matrix_multiply():
     with pytest.raises(ValueError):
         matrix_multiply([[1, 2], [3, 4]], [[5, 6]])
     with pytest.raises(ValueError):
-        matrix_multiply([[1, 2]], [[5, 6]])
+        matrix_multiply([[1, 2]], [[5, 6], [7, 8]])
     with pytest.raises(ValueError):
         matrix_multiply([], [[5, 6], [7, 8]])
     with pytest.raises(ValueError):
-        matrix_multiply([[1, 2], [3, 4]], [])
+        matrix_multiply([[1, 2], [3, 4]], [[5, 6], [7, 8, 9]])
 
 def test_sliding_window_max():
     assert sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 3) == [3, 3, 5, 5, 6, 7]
@@ -586,3 +588,7 @@ def test_sliding_window_max():
         sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 0)
     with pytest.raises(ValueError):
         sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], -3)
+    with pytest.raises(ValueError):
+        sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 3)
+    assert sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 2) == [3, 3, 5, 5]
+    assert sliding_window_max([1, 3, -1, -3, 5, 3, 6, 7], 4) == [3, 5, 5, 6]
