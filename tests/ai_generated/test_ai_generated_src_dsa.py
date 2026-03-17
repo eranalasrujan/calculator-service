@@ -67,3 +67,5 @@ def test_merge_intervals():
         merge_intervals([[1, 2], 3, 4])
     with pytest.raises(TypeError):
         merge_intervals([[1, 2], [3, 4], '5', 6])
+
+
