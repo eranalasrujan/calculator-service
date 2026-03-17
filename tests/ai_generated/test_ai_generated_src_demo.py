@@ -486,3 +486,257 @@ def test_fetch_ask_lyric_context():
 
     with pytest.raises(TypeError):
         fetch_ask_lyric
+
+def test_make_conversation_poc():
+    conversation = AskLyricConversation()
+    payload = AskLyricRequest(question="What is the meaning of life?")
+    with patch('extraction_tool.core.vector_db_handler.VectorDBHandler.fetch_medical_codes_from_codemaster') as mock_fetch_codes:
+        mock_fetch_codes.return_value = ([{"code": "123", "type": "type1", "description": "desc1"}], [])
+        with patch('extraction_tool.core.llm_handler.LLMHandler.stream_completion') as mock_stream_completion:
+            mock_stream_completion.return_value = [MagicMock()]
+            result = conversation.make_conversation_poc(payload)
+            assert len(result) == 1
+            assert result[0].startswith('data: ')
+
+    with patch('extraction_tool.core.vector_db_handler.VectorDBHandler.fetch_medical_codes_from_codemaster') as mock_fetch_codes:
+        mock_fetch_codes.return_value = ([], ["missing_code"])
+        with patch('extraction_tool.core.llm_handler.LLMHandler.stream_completion') as mock_stream_completion:
+            mock_stream_completion.return_value = [MagicMock()]
+            result = conversation.make_conversation_poc(payload)
+            assert len(result) == 3
+            assert result[1].startswith('data: **Listed Medical codes**\n')
+            assert result[2].startswith('data: **Note:** The following codes are not listed: **missing_code**\n')
+
+    with patch('extraction_tool.core.vector_db_handler.VectorDBHandler.fetch_medical_codes_from_codemaster') as mock_fetch_codes:
+        mock_fetch_codes.return_value = ([], [])
+        with patch('extraction_tool.core.llm_handler.LLMHandler.stream_completion') as mock_stream_completion:
+            mock_stream_completion.return_value = [MagicMock()]
+            result = conversation.make_conversation_poc(payload)
+            assert len(result) == 2
+            assert result[0].startswith('data: **Listed Medical codes**\n')
+            assert result[1].startswith('data: | Code | Type | Description |\n')
+
+    with patch('extraction_tool.core.vector_db_handler.VectorDBHandler.fetch_medical_codes_from_codemaster') as mock_fetch_codes:
+        mock_fetch_codes.side_effect = Exception("Test exception")
+        with pytest.raises(Exception):
+            conversation.make_conversation_poc(payload)
+
+    with patch('extraction_tool.core.vector_db_handler.VectorDBHandler.fetch_medical_codes_from_codemaster') as mock_fetch_codes:
+        mock_fetch_codes.return_value = ([], [])
+        with patch('extraction_tool.core.llm_handler.LLMHandler.stream_completion') as mock_stream_completion:
+            mock_stream_completion.side_effect = Exception("Test exception")
+            with pytest.raises(Exception):
+                conversation.make_conversation_poc(payload)
+
+def test_get_ask_lyric_common_code_columns():
+    conversation = AskLyricConversation()
+    assert conversation.get_ask_lyric_common_code_columns() == {
+        "id": "SERIAL PRIMARY KEY",
+        "code": "TEXT NOT NULL",
+        "description": "TEXT NOT NULL"
+    }
+    with pytest.raises(AttributeError):
+        conversation.get_ask_lyric_common_code_columns = None
+        conversation.get_ask_lyric_common_code_columns()
+
+def test_get_ask_lyric_table_schemas():
+    conversation = AskLyricConversation()
+    assert len(conversation.get_ask_lyric_table_schemas()) == 3
+    assert all(isinstance(schema, TableSchema) for schema in conversation.get_ask_lyric_table_schemas())
+    assert all(schema.table_name in ["medical_codes_icd", "medical_codes_cpt", "medical_codes_hcpcs"] for schema in conversation.get_ask_lyric_table_schemas())
+    with pytest.raises(AttributeError):
+        conversation.get_ask_lyric_table_schemas()
+
+def test_get_db_handlers():
+    conversation = AskLyricConversation()
+    conversation.get_db_handlers()
+    assert conversation.icd_handler is not None
+    assert conversation.cpt_handler is not None
+    assert conversation.hcpcs_handler is not None
+
+    with pytest.raises(AttributeError):
+        conversation.icd_handler = None
+        conversation.get_db_handlers()
+
+    with pytest.raises(ValueError):
+        conversation.icd_handler = VectorDBHandler()
+        conversation.get_db_handlers()
+
+    with pytest.raises(TypeError):
+        conversation.get_db_handlers()
+
+    with pytest.raises(TypeError):
+        conversation.get_db_handlers(schemas=[TableSchema()])
+
+    with pytest.raises(TypeError):
+        conversation.get_db_handlers(schemas=[TableSchema(), TableSchema()])
+
+    with pytest.raises(TypeError):
+        conversation.get_db_handlers(schemas=[TableSchema(), TableSchema(), TableSchema(), TableSchema()])
+
+def test_fetch_codes_from_query_rag():
+    conversation = AskLyricConversation()
+    conversation.icd_handler = MagicMock()
+    conversation.cpt_handler = MagicMock()
+    conversation.hcpcs_handler = MagicMock()
+
+    # Test with valid query and top_k
+    assert fetch_codes_from_query_rag(conversation, "What is the ICD code for diabetes?", top_k=10) == []
+
+    # Test with invalid query
+    assert fetch_codes_from_query_rag(conversation, "", top_k=10) == []
+
+    # Test with valid query and max_total_results
+    assert fetch_codes_from_query_rag(conversation, "What is the ICD code for diabetes?", max_total_results=5) == []
+
+    # Test with valid query and top_k, max_total_results
+    assert fetch_codes_from_query_rag(conversation, "What is the ICD code for diabetes?", top_k=10, max_total_results=5) == []
+
+    # Test with invalid code type
+    with pytest.raises(ValueError):
+        fetch_codes_from_query_rag(conversation, "What is the ICD code for diabetes?", top_k=10, max_total_results=5)
+
+    # Test with invalid handler
+    conversation.icd_handler = None
+    with pytest.raises(AttributeError):
+        fetch_codes_from_query_rag(conversation, "What is the ICD code for diabetes?", top_k=10, max_total_results=5)
+
+    # Test with invalid query and top_k
+    with pytest.raises(ValueError):
+        fetch_codes_from_query_rag(conversation, "What is the ICD code for diabetes?", top_k=-10, max_total_results=5)
+
+    # Test with invalid query and max_total_results
+    with pytest.raises(ValueError):
+        fetch_codes_from_query_rag(conversation, "What is the ICD code for diabetes?", top_k=10, max_total_results=-5)
+
+    # Test with invalid query and top_k, max_total_results
+    with pytest.raises(ValueError):
+        fetch_codes_from_query_rag(conversation, "What is the ICD code for diabetes?", top_k=-10, max_total_results=-5)
+
+def test_fetch_ask_lyric_context():
+    conversation = AskLyricConversation()
+    assert fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, 15) == {
+        "mentioned_medical_codes": [],
+        "rag_fetched_medical_codes": []
+    }
+
+    assert fetch_ask_lyric_context("What is the definition of diabetes?", [{"code": "123"}], 10, 15) == {
+        "mentioned_medical_codes": [{"code": "123"}],
+        "rag_fetched_medical_codes": []
+    }
+
+    assert fetch_ask_lyric_context("What is the definition of diabetes?", None, 0, 15) == {
+        "mentioned_medical_codes": [],
+        "rag_fetched_medical_codes": []
+    }
+
+    with pytest.raises(ValueError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, -10, 15)
+
+    with pytest.raises(ValueError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, -15)
+
+    with pytest.raises(ValueError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, 15)
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, "10", 15)
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, "15")
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, 15.5)
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, "abc")
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, [15])
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, {"a": 15})
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, (15,))
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, {"a": 15, "b": 20})
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, [15, 20])
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, {"a": 15, "b": 20, "c": 30})
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, [15, 20, 30])
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, {"a": 15, "b": 20, "c": 30, "d": 40})
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, [15, 20, 30, 40])
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, {"a": 15, "b": 20, "c": 30, "d": 40, "e": 50})
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, [15, 20, 30, 40, 50])
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, {"a": 15, "b": 20, "c": 30, "d": 40, "e": 50, "f": 60})
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, [15, 20, 30, 40, 50, 60])
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, {"a": 15, "b": 20, "c": 30, "d": 40, "e": 50, "f": 60, "g": 70})
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, [15, 20, 30, 40, 50, 60, 70])
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, {"a": 15, "b": 20, "c": 30, "d": 40, "e": 50, "f": 60, "g": 70, "h": 80})
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, [15, 20, 30, 40, 50, 60, 70, 80])
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, {"a": 15, "b": 20, "c": 30, "d": 40, "e": 50, "f": 60, "g": 70, "h": 80, "i": 90})
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, [15, 20, 30, 40, 50, 60, 70, 80, 90])
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, {"a": 15, "b": 20, "c": 30, "d": 40, "e": 50, "f": 60, "g": 70, "h": 80, "i": 90, "j": 100})
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, [15, 20, 30, 40, 50, 60, 70, 80, 90, 100])
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, {"a": 15, "b": 20, "c": 30, "d": 40, "e": 50, "f": 60, "g": 70, "h": 80, "i": 90, "j": 100, "k": 110})
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, [15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110])
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, {"a": 15, "b": 20, "c": 30, "d": 40, "e": 50, "f": 60, "g": 70, "h": 80, "i": 90, "j": 100, "k": 110, "l": 120})
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, [15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120])
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, {"a": 15, "b": 20, "c": 30, "d": 40, "e": 50, "f": 60, "g": 70, "h": 80, "i": 90, "j": 100, "k": 110, "l": 120, "m": 130})
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, [15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130])
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, {"a": 15, "b": 20, "c": 30, "d": 40, "e": 50, "f": 60, "g": 70, "h": 80, "i": 90, "j": 100, "k": 110, "l": 120, "m": 130, "n": 140})
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric_context("What is the definition of diabetes?", None, 10, [15, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120, 130, 140])
+
+    with pytest.raises(TypeError):
+        fetch_ask_lyric
