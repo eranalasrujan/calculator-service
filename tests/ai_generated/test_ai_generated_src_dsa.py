@@ -68,4 +68,29 @@ def test_merge_intervals():
     with pytest.raises(TypeError):
         merge_intervals([[1, 2], [3, 4], '5', 6])
 
-
+def test_two_sum():
+    assert two_sum([2, 7, 11, 15], 9) == [0, 1]
+    assert two_sum([3, 2, 4], 6) == [1, 0]
+    assert two_sum([3, 3], 6) == [0, 1]
+    with pytest.raises(TypeError):
+        two_sum("123", 9)
+    with pytest.raises(TypeError):
+        two_sum([2, 7, 11, 15], "9")
+    with pytest.raises(TypeError):
+        two_sum([2, 7, 11, 15], 9.5)
+    with pytest.raises(TypeError):
+        two_sum([2, 7, 11, 15], None)
+    with pytest.raises(TypeError):
+        two_sum([2, 7, 11, 15], True)
+    with pytest.raises(TypeError):
+        two_sum([2, 7, 11, 15], False)
+    with pytest.raises(TypeError):
+        two_sum([2, 7, 11, 15], [])
+    with pytest.raises(TypeError):
+        two_sum([2, 7, 11, 15], {})
+    with pytest.raises(TypeError):
+        two_sum([2, 7, 11, 15], ())
+    with pytest.raises(TypeError):
+        two_sum([2, 7, 11, 15], set())
+    with pytest.raises(TypeError):
+        two_sum([2, 7, 11, 15], 9, 10)
